@@ -1,8 +1,11 @@
+import 'package:first_app/ardesktop.dart';
 import 'package:first_app/component.dart';
 import 'package:first_app/model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class MyDeskTop extends StatelessWidget {
   const MyDeskTop({super.key});
@@ -44,16 +47,43 @@ class MyDeskTop extends StatelessWidget {
         actions: [
           Padding(
             padding: const EdgeInsets.all(10.0),
-            child: ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                shape: const StadiumBorder(),
-                backgroundColor: Colors.green,
+            child: Container(
+              width: 120,
+              decoration: BoxDecoration(
+                color:const Color(0xffa1afd4),
+                borderRadius: BorderRadius.circular(40.0),
               ),
-              child: Text(
-                'WhatsApp',
-                style: GoogleFonts.lora(fontSize: 15, color: Colors.white),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Text("Call Me",style: GoogleFonts.cairo(
+                      color: Colors.grey.shade800,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold),),
+                  IconButton(
+                      onPressed: () {
+                        launchUrl(Uri.parse('tel:+965 99245950'));
+                      },
+                      // style: ElevatedButton.styleFrom(
+                      //   shape: const StadiumBorder(),
+                      //   backgroundColor: Colors.green,
+                      // ),
+                      icon:const Icon(Icons.phone, size: 20,color:Colors.orange ,)
+                  ),
+                ],
               ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: IconButton(
+                onPressed: () {
+                 // Navigator.of(context).push(MaterialPageRoute(builder: (context) => const ArDesktop()));
+                 Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const ArDesktop())                  );
+
+                },
+
+                icon:const Icon(Icons.language, size: 20,color:Color(0xffa1afd4) ,)
             ),
           ),
         ],
@@ -64,7 +94,7 @@ class MyDeskTop extends StatelessWidget {
             Container(
               width: double.infinity,
               color: Colors.grey.shade200,
-              height: 370,
+              height: 350,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -177,19 +207,20 @@ class MyDeskTop extends StatelessWidget {
             ),
             Container(
               alignment: Alignment.center,
-              height: 120,
+              height: 100,
+              color:const Color(0xffa1afd4),
               child: ListView.builder(
-                  itemCount: program.length,
+                  itemCount: programList.length,
                   shrinkWrap: true,
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (context, index) => Padding(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 30, vertical: 30),
                     child: Text(
-                      program[index],
+                      programList[index].title,
                       style: GoogleFonts.lobster(
                         fontSize: 35,
-                        color: Colors.grey,
+                        color: Colors.grey.shade600,
                       ),
                     ),
                   )),
@@ -225,7 +256,7 @@ class MyDeskTop extends StatelessWidget {
               alignment: Alignment.center,
               height: 350,
               child: ListView.builder(
-                  itemCount: program.length,
+                  itemCount: programList.length,
                   shrinkWrap: true,
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (context, index) => Padding(
@@ -584,7 +615,7 @@ class MyDeskTop extends StatelessWidget {
                           color:  Colors.grey.shade200,
                         ),
                         child: Padding(
-                          padding:  EdgeInsets.only(left: 100),
+                          padding:  const EdgeInsets.only(left: 100),
                           child:  Column(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -597,14 +628,19 @@ class MyDeskTop extends StatelessWidget {
                                 color: Colors.black,
                                 fontSize: 40,
                                 fontWeight: FontWeight.bold)),
-                            Row(
-                              children: [
-                               const Icon(Icons.email, size: 30, color: Colors.orange,),
-                                Text('Mrhasob@gmail.com',  style: GoogleFonts.cairo(
-                                    color: Colors.orange,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold)),
-                              ],
+                            InkWell(
+                              onTap: (){
+                                _launchMailClient('Mrhasob@gmail.com');
+                              },
+                              child: Row(
+                                children: [
+                                 const Icon(Icons.email, size: 30, color: Colors.orange,),
+                                  Text('Mrhasob@gmail.com',  style: GoogleFonts.cairo(
+                                      color: Colors.orange,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold)),
+                                ],
+                              ),
                             ),
                           ],),
                         ),
@@ -613,7 +649,7 @@ class MyDeskTop extends StatelessWidget {
                   const Positioned(
                        right: 50,
                        bottom: -15,
-                       child:  Image(image: AssetImage('images/idie.png'), width: 450,))
+                       child:  Image(image: AssetImage('images/idea.png'), width: 450,))
                   ],
                 ),
               ),
@@ -634,3 +670,11 @@ class MyDeskTop extends StatelessWidget {
   }
 }
 
+void _launchMailClient(String targetEmail) async {
+  String mailUrl = 'mailto:$targetEmail';
+  try {
+    await launchUrlString(mailUrl);
+  } catch (e) {
+    await Clipboard.setData(ClipboardData(text: targetEmail));
+  }
+}
